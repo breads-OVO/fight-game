@@ -1,0 +1,19 @@
+# Fighting Game Server - 默认全局配置
+# 各服务专用配置在对应的 {service}.yaml 中
+# 支持环境变量覆盖：FIGHT_ETCD_ENDPOINTS, FIGHT_GATEWAY_WS_PORT 等
+
+etcd:
+  endpoints:
+    - "127.0.0.1:2379"
+
+redis:
+  addr: "127.0.0.1:6379"
+  db: 0
+
+mysql:
+  dsn: ""
+
+shutdown:
+  game-wait: 30
+  gateway-wait: 15
+  grpc-grace: 5

@@ -1,0 +1,6 @@
+match:
+  grpc:
+    port: 9001
+  elo-range: 200             # 匹配 ELO 范围 ±200
+  scan-interval: 1           # 匹配队列扫描间隔（秒）
+  timeout: 180               # 匹配超时（秒）

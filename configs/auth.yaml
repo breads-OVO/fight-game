@@ -1,0 +1,3 @@
+auth:
+  grpc:
+    port: 8002

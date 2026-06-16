@@ -1,0 +1,6 @@
+game:
+  grpc:
+    port: 9002
+  tick-rate: 60              # 帧率（tick/s）
+  match-timeout: 180         # 对局超时（秒）
+  reconnect-timeout: 30      # 断线重连等待时间（秒）
