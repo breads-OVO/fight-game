@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package gateway;
+option go_package = "fight-game/pb/gateway";
+
+
+service GatewayService {
+  // 向房间内所有玩家广播消息
+  rpc PushToRoom(PushToRoomReq) returns (PushToRoomResp);
+
+  // 向指定玩家推送消息
+  rpc PushToPlayer(PushToPlayerReq) returns (PushToPlayerResp);
+}
+
+// PushToRoom 请求
+message PushToRoomReq {
+  string roomId = 1;                  // 目标房间 ID
+  int32 frameNo = 2;                  // 当前帧号
+  bytes frameData = 3;                // 帧状态数据（FrameState 序列化）
+  int64 timestamp = 4;                // 服务端时间戳
+}
+
+// PushToRoom 响应
+message PushToRoomResp {
+  int32 code = 1;                     // 0=成功
+  string message = 2;
+}
+
+// PushToPlayer 请求
+message PushToPlayerReq {
+  string playerId = 1;                // 目标玩家 ID
+  int32 msgType = 2;                  // 消息类型（对应 WSMsgType）
+  bytes body = 3;                     // 消息体
+  int64 timestamp = 4;                // 服务端时间戳
+}
+
+// PushToPlayer 响应
+message PushToPlayerResp {
+  int32 code = 1;                     // 0=成功
+  string message = 2;
+}

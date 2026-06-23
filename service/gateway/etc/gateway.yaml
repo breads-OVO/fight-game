@@ -1,0 +1,23 @@
+Name: gateway.service
+Host: 0.0.0.0
+Port: 9003
+
+WebSocket:
+  Port: 9000
+  ReadTimeout: 30
+  WriteTimeout: 5
+  PingInterval: 10
+  MaxMessageSize: 4096
+  IdleTimeout: 30
+
+Auth:
+  JwtSecret: fight-game-jwt-secret-dev
+  JwtExpire: 86400
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: fight.gateway
+
+Log:
+  Level: info

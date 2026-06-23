@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package common;
+option go_package = "fight-game/pb/common";
+
+// WebSocket 统一消息包装
+message WSMessage {
+  int32 msgType = 1;           // 消息类型（对应路由）
+  bytes body = 2;              // Protobuf body
+  string playerId = 3;         // 发送者
+  int64 timestamp = 4;         // 客户端时间戳
+  int32 frameNo = 5;           // 帧号（战斗场景）
+}
+
+// 通用响应
+message WSResponse {
+  int32 code = 1;              // 0=成功, 非0=错误码
+  string message = 2;
+  bytes data = 3;              // 具体业务数据
+}
+
+// WebSocket 消息类型枚举
+enum WSMsgType {
+  MSG_UNKNOWN = 0;
+
+  // Auth 相关 (1000~1999)
+  MSG_AUTH_LOGIN = 1001;
+  MSG_AUTH_REGISTER = 1002;
+  MSG_AUTH_TOKEN_REFRESH = 1003;
+
+  // Match 相关 (2000~2999)
+  MSG_MATCH_ENQUEUE = 2001;
+  MSG_MATCH_DEQUEUE = 2002;
+  MSG_MATCH_STATUS = 2003;
+
+  // Game 相关 (3000~3999)
+  MSG_GAME_INPUT = 3001;
+  MSG_GAME_STATE = 3002;
+  MSG_GAME_RESULT = 3003;
+  MSG_GAME_RECONNECT = 3004;
+
+  // System 相关 (9000~9999)
+  MSG_HEARTBEAT_PING = 9001;
+  MSG_HEARTBEAT_PONG = 9002;
+  MSG_ERROR = 9999;
+}
+
+// 空消息（用于无参数的请求/响应）
+message Empty {}
