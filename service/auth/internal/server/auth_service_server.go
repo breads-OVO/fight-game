@@ -13,7 +13,7 @@ import (
 
 type AuthServiceServer struct {
 	svcCtx *svc.ServiceContext
-	auth.UnimplementedLoginServiceServer
+	auth.UnimplementedAuthServiceServer
 }
 
 func NewAuthServiceServer(svcCtx *svc.ServiceContext) *AuthServiceServer {

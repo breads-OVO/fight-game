@@ -30,7 +30,7 @@ func main() {
 
 	// 启动 gRPC 服务器
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		auth.RegisterLoginServiceServer(grpcServer, srv)
+		auth.RegisterAuthServiceServer(grpcServer, srv)
 		if c.Mode == "dev" {
 			reflection.Register(grpcServer)
 		}

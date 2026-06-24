@@ -1,0 +1,18 @@
+Name: auth.service
+ListenOn: 0.0.0.0:9002
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: fight.auth
+
+JwtSecret: fight-game-jwt-secret-dev
+JwtExpire: 12
+RefreshTokenExpire: 7
+
+MySQL:
+  DataSource: root:123456@tcp(127.0.0.1:3306)/fight_game?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConns: 100
+  MaxIdleConns: 10
+
+Log:
+  Level: info

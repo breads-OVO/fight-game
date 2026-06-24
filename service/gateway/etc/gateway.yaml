@@ -10,9 +10,11 @@ WebSocket:
   MaxMessageSize: 4096
   IdleTimeout: 30
 
-Auth:
-  JwtSecret: fight-game-jwt-secret-dev
-  JwtExpire: 86400
+AuthRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.auth
 
 Etcd:
   Hosts:

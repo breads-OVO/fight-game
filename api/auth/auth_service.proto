@@ -1,3 +1,5 @@
+syntax = "proto3";
+
 package auth;
 option go_package = "fight-game/pb/auth";
 
@@ -5,13 +7,9 @@ import "api/auth/auth_login.proto";
 import "api/auth/auth_register.proto";
 import "api/auth/auth_token.proto";
 
-service LoginService {
-  // 登录
+service AuthService {
   rpc Login(auth.login.LoginRequest) returns (auth.login.LoginResponse);
-  // 注册
   rpc Register(auth.register.RegisterRequest) returns (auth.register.RegisterResponse);
-  //验证token
   rpc VerifyToken(auth.token.VerifyRequest) returns (auth.token.VerifyResponse);
-  //刷新token
   rpc RefreshToken(auth.token.RefreshRequest) returns (auth.token.RefreshResponse);
 }

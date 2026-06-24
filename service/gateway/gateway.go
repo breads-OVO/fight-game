@@ -37,10 +37,7 @@ func initRouter(svcCtx *svc.ServiceContext) *router.Router {
 
 	// 按模块批量注册，每个模块一个文件、一次注册
 	r.RegisterModule(handler.NewSystemHandler().Routes())
-	// 后续对接 Auth gRPC 后放开：
-	// r.RegisterModule(NewAuthHandler(svcCtx).Routes())
-	// r.RegisterModule(NewMatchHandler(svcCtx).Routes())
-	// r.RegisterModule(NewGameHandler(svcCtx).Routes())
+	r.RegisterModule(handler.NewAuthHandler(svcCtx).Routes())
 
 	return r
 }

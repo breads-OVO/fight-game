@@ -1,26 +1,29 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/golang-jwt/jwt/v4"
+	"fight-game/pb/auth/token"
+	"fight-game/service/gateway/internal/svc"
+
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-// JwtMiddleware JWT中间件
-type JwtMiddleware struct {
-	secret string
+// AuthMiddleware 认证中间件（通过 Auth gRPC 验证 Token）
+type AuthMiddleware struct {
+	svcCtx *svc.ServiceContext
 }
 
-func NewJwtMiddleware(secret string) *JwtMiddleware {
-	return &JwtMiddleware{secret: secret}
+func NewAuthMiddleware(svcCtx *svc.ServiceContext) *AuthMiddleware {
+	return &AuthMiddleware{svcCtx: svcCtx}
 }
 
-// Verify 验证请求
-func (m *JwtMiddleware) Verify(next http.HandlerFunc) http.HandlerFunc {
+// Verify 通过 AuthRPC.VerifyToken 验证 JWT，将 playerId 注入请求头
+func (m *AuthMiddleware) Verify(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := r.Header.Get("Authorization")
 		if tokenStr == "" {
@@ -30,25 +33,16 @@ func (m *JwtMiddleware) Verify(next http.HandlerFunc) http.HandlerFunc {
 
 		tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
 
-		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return []byte(m.secret), nil
+		resp, err := m.svcCtx.AuthClient.VerifyToken(context.Background(), &token.VerifyRequest{
+			Token: tokenStr,
 		})
-
-		if err != nil || !token.Valid {
-			logx.Errorf("invalid token: %v", err)
+		if err != nil || !resp.Valid {
+			logx.Errorf("auth verify token failed: %v", err)
 			httpx.Error(w, errors.New("invalid token"))
 			return
 		}
 
-		//token.Claims 断言为 jwt.MapClaims（即 map[string]interface{} 类型）
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			httpx.Error(w, errors.New("invalid token claims"))
-			return
-		}
-
-		playerId, _ := claims["playerId"].(string)
-		r.Header.Set("X-Player-Id", playerId)
+		r.Header.Set("X-Player-Id", resp.PlayerId)
 		next(w, r)
 	}
 }

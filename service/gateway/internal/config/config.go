@@ -1,11 +1,14 @@
 package config
 
-import "github.com/zeromicro/go-zero/rest"
+import (
+	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/zrpc"
+)
 
 type Config struct {
-	rest.RestConf           // rest配置
-	WebSocket     WebSocket // websocket配置
-	Auth          Auth      // 认证配置
+	rest.RestConf                    // rest配置
+	AuthRpc       zrpc.RpcClientConf // Auth gRPC 客户端配置
+	WebSocket     WebSocket          // websocket配置
 }
 
 type WebSocket struct {
@@ -15,9 +18,4 @@ type WebSocket struct {
 	PingInterval   int   // 心跳间隔
 	MaxMessageSize int64 // 最大消息大小
 	IdleTimeout    int   // 空闲超时时间
-}
-
-type Auth struct {
-	JwtSecret string // JWT密钥
-	JwtExpire int    // JWT过期时间
 }

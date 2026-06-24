@@ -11,30 +11,47 @@ import (
 // RegisterRoutes HTTP 路由注册
 func RegisterRoutes(server *rest.Server, svcCtx *svc.ServiceContext) {
 
-	//初始化jwt中间件和websocket处理器
-	jwtMiddleware := NewJwtMiddleware(svcCtx.Config.Auth.JwtSecret)
+	// 初始化认证中间件（通过 AuthRPC 验证 Token）
+	authMiddleware := NewAuthMiddleware(svcCtx)
 	wsHandler := NewWSHandler(svcCtx)
+	authHandler := NewAuthHandler(svcCtx)
 
 	/*
-		注册get方法路径为ws/的路由
-		当客户端发起 WebSocket 握手请求时，首先经过 jwtMiddleware.Verify，验证 JWT 的有效性。
-		若验证通过，中间件将用户 ID（如 playerId）注入请求头（例如 X-Player-Id），然后调用 wsHandler.HandleWS 执行协议升级，建立 WebSocket 连接。
-		若验证失败，握手请求直接返回 401 错误，不会建立 WebSocket 连接。
+		注册 WebSocket 路由
+		客户端先通过 Auth HTTP 端点获取 JWT，再使用该 JWT 建立 WebSocket 连接。
+		authMiddleware.Verify 通过 AuthRPC.VerifyToken 验证 JWT，将 playerId 注入请求头，
+		然后调用 wsHandler.HandleWS 执行协议升级，建立 WebSocket 连接。
 	*/
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
 		Path:    "/ws",
-		Handler: jwtMiddleware.Verify(wsHandler.HandleWS),
+		Handler: authMiddleware.Verify(wsHandler.HandleWS),
 	})
 
-	/*
-		一个简单的 GET 端点 /health，返回 JSON 格式的 {"status":"ok"}。
-	*/
 	server.AddRoute(rest.Route{
 		Method: http.MethodGet,
 		Path:   "/health",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(`{"status":"ok"}`))
 		},
+	})
+
+	// Auth HTTP 端点（无需 JWT，用于首次获取 token）
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/auth/login",
+		Handler: authHandler.HandleLogin,
+	})
+	// 注册
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/auth/register",
+		Handler: authHandler.HandleRegister,
+	})
+	// 刷新 token
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/auth/refresh",
+		Handler: authHandler.HandleRefresh,
 	})
 }
