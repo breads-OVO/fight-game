@@ -2,6 +2,8 @@ package handler
 
 import (
 	"errors"
+	"fight-game/pb/common"
+	"fight-game/pkg/common/utils"
 	"fight-game/service/gateway/internal/config"
 	"net/http"
 	"time"
@@ -23,7 +25,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// websocket处理器
+// WSHandler websocket处理器
 type WSHandler struct {
 	svcCtx *svc.ServiceContext // 服务上下文
 }
@@ -100,15 +102,20 @@ func (h *WSHandler) readLoop(conn *ws.Connection, cfg config.WebSocket) {
 			continue
 		}
 
-		// 处理文本消息和二进制消息
-		if msgType == websocket.TextMessage || msgType == websocket.BinaryMessage {
-			resp, err := h.svcCtx.Router.Dispatch(conn.PlayerId, data)
+		// 只处理二进制消息（Protobuf）
+		if msgType == websocket.BinaryMessage {
+			msg, err := utils.UnpackWSMessage(data)
+			if err != nil {
+				logx.Errorf("proto unmarshal error: %v", err)
+				return
+			}
+			resp, err := h.svcCtx.Router.Dispatch(conn.PlayerId, msg)
 			if err != nil {
 				logx.Errorf("route message error: player=%s, err=%v", conn.PlayerId, err)
-				//resp = WSResponse{Code: -1, Message: "invalid message format"}
+				resp = &common.WSResponse{Code: -1, Message: "internal error"}
 			}
 			if resp != nil {
-				err := conn.WriteJSON(resp)
+				err := conn.WriteProtobuf(0, resp)
 				if err != nil {
 					logx.Errorf("websocket 发送消息错误: player=%s, err=%v", conn.PlayerId, err)
 					return

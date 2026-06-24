@@ -1,12 +1,15 @@
 package ws
 
 import (
-	"encoding/json"
+	"fight-game/pb/common"
 	"sync"
 	"time"
 
+	"fight-game/pkg/common/utils"
+
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/protobuf/proto"
 )
 
 type Connection struct {
@@ -38,13 +41,13 @@ func (c *Connection) WriteMessage(msgType int, data []byte) error {
 	return c.Conn.WriteMessage(msgType, data)
 }
 
-// WriteJSON 写入JSON消息
-func (c *Connection) WriteJSON(v interface{}) error {
-	data, err := json.Marshal(v)
+// WriteProtobuf 写入 Protobuf 消息（用 WSMessage 包裹，BinaryMessage 发送）
+func (c *Connection) WriteProtobuf(msgType common.WSMsgType, payload proto.Message) error {
+	data, err := utils.PackWSMessageWithProto(int32(msgType), c.PlayerId, payload, "", 0)
 	if err != nil {
 		return err
 	}
-	return c.WriteMessage(websocket.TextMessage, data)
+	return c.WriteMessage(websocket.BinaryMessage, data)
 }
 
 // Close 关闭连接

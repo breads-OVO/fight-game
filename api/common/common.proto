@@ -6,10 +6,12 @@ option go_package = "fight-game/pb/common";
 // WebSocket 统一消息包装
 message WSMessage {
   int32 msgType = 1;           // 消息类型（对应路由）
-  bytes body = 2;              // Protobuf body
-  string playerId = 3;         // 发送者
-  int64 timestamp = 4;         // 客户端时间戳
-  int32 frameNo = 5;           // 帧号（战斗场景）
+  string msgID = 2;            // 消息ID
+  string seqId = 3;            // 请求序列号(用于请求-响应匹配)
+  bytes body = 4;              // Protobuf body
+  string playerId = 5;         // 发送者
+  int64 timestamp = 6;         // 时间戳
+  int32 frameNo = 7;           // 帧号（战斗场景）
 }
 
 // 通用响应
@@ -41,7 +43,9 @@ enum WSMsgType {
 
   // System 相关 (9000~9999)
   MSG_HEARTBEAT_PING = 9001;
-  MSG_HEARTBEAT_PONG = 9002;
+  MSG_HEARTBEAT_PING_REQUEST = 9002;
+  MSG_HEARTBEAT_PONG = 9003;
+  MSG_HEARTBEAT_PONG_REQUEST = 9004;
   MSG_ERROR = 9999;
 }
 

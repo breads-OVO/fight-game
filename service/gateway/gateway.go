@@ -1,20 +1,18 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-
 	"fight-game/service/gateway/internal/config"
 	"fight-game/service/gateway/internal/handler"
 	"fight-game/service/gateway/internal/router"
 	"fight-game/service/gateway/internal/svc"
+	"flag"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 )
 
-var configFile = flag.String("f", "etc/gateway.yaml", "the config file")
+var configFile = flag.String("f", "service/gateway/etc/gateway.yaml", "the config file")
 
 func main() {
 	flag.Parse()
@@ -31,7 +29,6 @@ func main() {
 	handler.RegisterRoutes(server, svcCtx)
 
 	logx.Infof("Gateway starting on WebSocket port %d, gRPC port %d", c.WebSocket.Port, c.Port)
-	fmt.Printf("Gateway starting on WebSocket port %d, gRPC port %d\n", c.WebSocket.Port, c.Port)
 	server.Start()
 }
 
