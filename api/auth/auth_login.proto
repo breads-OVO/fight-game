@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package auth.login;
+option go_package = "fight-game/pb/auth/login";
+
+enum LoginType {
+  LoginType_Email = 0;
+  LoginType_Phone = 1;
+}
+
+//邮箱登录请求
+message LoginEmailRequest {
+  string email = 1;
+  string password = 2;
+}
+
+//手机号登录请求
+message LoginPhoneRequest {
+  string phone = 1;
+  string password = 2;
+}
+
+//登录请求
+message LoginRequest {
+  LoginType type = 1;
+  oneof login_info {
+    LoginEmailRequest email = 2;
+    LoginPhoneRequest phone = 3;
+  }
+}
+
+//登录响应
+message LoginResponse {
+  string token = 1;
+  string refreshToken = 2;
+  string playerId = 3;
+}
+

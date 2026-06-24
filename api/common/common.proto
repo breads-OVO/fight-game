@@ -26,9 +26,12 @@ enum WSMsgType {
   MSG_UNKNOWN = 0;
 
   // Auth 相关 (1000~1999)
-  MSG_AUTH_LOGIN = 1001;
-  MSG_AUTH_REGISTER = 1002;
-  MSG_AUTH_TOKEN_REFRESH = 1003;
+  MSG_AUTH_LOGIN = 1001;                          // 登录
+  MSG_AUTH_LOGIN_RESPONSE = 1002;                 // 登录响应
+  MSG_AUTH_REGISTER = 1003;                       // 注册
+  MSG_AUTH_REGISTER_RESPONSE = 1004;              // 注册响应
+  MSG_AUTH_TOKEN_REFRESH = 1005;                  // 刷新令牌
+  MSG_AUTH_TOKEN_REFRESH_RESPONSE = 1006;         // 刷新令牌响应
 
   // Match 相关 (2000~2999)
   MSG_MATCH_ENQUEUE = 2001;

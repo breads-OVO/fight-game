@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package auth.token;
+option go_package = "fight-game/pb/auth/token";
+
+//验签请求
+message VerifyRequest {
+  string token = 1;
+}
+//验签响应
+message VerifyResponse {
+  bool valid = 1;
+  string playerId = 2;
+}
+//刷新token
+message RefreshRequest {
+  string refreshToken = 1;
+}
+//刷新token响应
+message RefreshResponse {
+  string token = 1;
+  int64 expireTime = 2;
+}

@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package auth.register;
+option go_package = "fight-game/pb/auth/register";
+
+//注册类型
+enum RegisterType {
+  RegisterType_Email = 0;
+  RegisterType_Phone = 1;
+}
+
+//邮箱注册请求
+message RegisterEmailRequest {
+  string email = 1;
+  string password = 2;
+}
+
+//手机号注册请求
+message RegisterPhoneRequest {
+  string phone = 1;
+  string password = 2;
+}
+
+//注册请求
+message RegisterRequest {
+  RegisterType type = 1;
+  oneof registerInfo {
+    RegisterEmailRequest email = 2;
+    RegisterPhoneRequest phone = 3;
+  }
+}
+
+//注册响应
+message RegisterResponse {
+  string token = 1;
+  string refreshToken = 2;
+  string playerId = 3;
+}
+
+
+
+
