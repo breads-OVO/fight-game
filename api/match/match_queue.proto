@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package match.queue;
+option go_package = "fight-game/pb/match/queue";
+
+enum GameType {
+  ENTERTAINMENT = 0;
+  COMPETITION = 1;
+}
+
+// 匹配请求
+message MatchRequest {
+  string playerId = 1;
+  GameType gameType = 2; // 游戏类型
+  oneof matchParams {
+    EntertainmentMatchParams entertainmentMatchParams = 3;
+    CompetitionMatchParams competitionMatchParams = 4;
+  }
+}
+
+// 匹配响应
+message MatchResponse {
+  string ticketId = 1; // 匹配凭证，用于查询匹配状态
+  int32 estimatedWait= 2; // 预计等待时间
+}
+
+//娱乐匹配参数
+message EntertainmentMatchParams {
+}
+
+// 竞赛匹配参数
+message CompetitionMatchParams {
+  int32 rating = 1; // 玩家段位分
+}
+
+
+// 离开匹配队列
+message LeaveQueueRequest {
+  string player_id = 1;
+  string ticket_id = 2;
+}
+// 离开匹配队列响应
+message LeaveQueueResponse {
+  bool success = 1;
+}
+
+// 查询匹配状态
+message MatchStatusRequest {
+  string ticket_id = 1;
+}
+
+enum MatchStatus {
+  QUEUEING = 0;   // 排队中
+  MATCHED = 1;    // 已匹配
+  TIMEOUT = 2;    // 超时
+  CANCELLED = 3;  // 已取消
+}
+
+// 匹配状态响应
+message MatchStatusResponse {
+  MatchStatus status = 1;
+  string roomId = 2; // 匹配成功后分配的房间ID
+  repeated string playerIds = 3; // 匹配到的玩家列表
+}

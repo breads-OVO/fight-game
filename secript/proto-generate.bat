@@ -16,7 +16,9 @@ protoc --proto_path=. ^
        api/auth/auth_login.proto ^
        api/auth/auth_register.proto ^
        api/auth/auth_token.proto ^
-       api/auth/auth_service.proto
+       api/auth/auth_service.proto ^
+       api/match/match_queue.proto ^
+       api/match/match_service.proto
 if errorlevel 1 (
     echo 错误: proto 生成失败
     pause

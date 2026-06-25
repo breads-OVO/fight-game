@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package match;
+option go_package = "fight-game/pb/match";
+
+import "api/match/match_queue.proto";
+
+service MatchService {
+  // 加入匹配队列
+  rpc JoinQueue(match.queue.MatchRequest) returns (match.queue.MatchResponse);
+  // 离开匹配队列
+  rpc LeaveQueue(match.queue.LeaveQueueRequest) returns (match.queue.LeaveQueueResponse);
+  // 获取匹配状态
+  rpc GetMatchStatus(match.queue.MatchStatusRequest) returns (match.queue.MatchStatusResponse);
+}

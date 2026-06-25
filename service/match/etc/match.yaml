@@ -1,0 +1,26 @@
+Name: match.service
+ListenOn: 0.0.0.0:9003
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: fight.match
+
+MySQL:
+  DataSource: root:123456@tcp(127.0.0.1:3306)/fight_game?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConns: 100
+  MaxIdleConns: 10
+
+Redis:
+  Host: 127.0.0.1:6379
+  Type: node
+  Pass:
+  DB: 0
+
+Match:
+  QueueTimeout: 600          # 匹配超时时间（秒）
+  RatingRange: 100          # 初始匹配分差
+  RatingRangeMax: 500       # 最大匹配分差
+  RatingRangeStep: 50       # 匹配分差步进（随时间扩大）
+
+Log:
+  Level: info

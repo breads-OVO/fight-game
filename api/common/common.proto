@@ -34,15 +34,15 @@ enum WSMsgType {
   MSG_AUTH_TOKEN_REFRESH_RESPONSE = 1006;         // 刷新令牌响应
 
   // Match 相关 (2000~2999)
-  MSG_MATCH_ENQUEUE = 2001;
-  MSG_MATCH_DEQUEUE = 2002;
-  MSG_MATCH_STATUS = 2003;
+  MSG_MATCH_QUEUE = 2001;                         // 进入匹配队列
+  MSG_MATCH_QUEUE_RESPONSE = 2002;                // 进入匹配队列响应
+  MSG_MATCH_QUEUE_LEAVE = 2003;                   // 离开匹配队列
+  MSG_MATCH_QUEUE_LEAVE_RESPONSE = 2004;          // 离开匹配队列响应
+  MSG_MATCH_STATUS = 2005;                        // 匹配状态查询
+  MSG_MATCH_STATUS_RESPONSE = 2006;               // 匹配状态查询响应
 
   // Game 相关 (3000~3999)
-  MSG_GAME_INPUT = 3001;
-  MSG_GAME_STATE = 3002;
-  MSG_GAME_RESULT = 3003;
-  MSG_GAME_RECONNECT = 3004;
+
 
   // System 相关 (9000~9999)
   MSG_HEARTBEAT_PING = 9001;
