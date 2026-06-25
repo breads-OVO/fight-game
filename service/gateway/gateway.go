@@ -38,6 +38,7 @@ func initRouter(svcCtx *svc.ServiceContext) *router.Router {
 	// 按模块批量注册，每个模块一个文件、一次注册
 	r.RegisterModule(handler.NewSystemHandler().Routes())
 	r.RegisterModule(handler.NewAuthHandler(svcCtx).Routes())
+	r.RegisterModule(handler.NewMatchHandler(svcCtx).Routes())
 
 	return r
 }

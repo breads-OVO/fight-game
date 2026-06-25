@@ -18,6 +18,7 @@ import (
 var configFile = flag.String("f", "service/match/etc/match.yaml", "the config file")
 
 func main() {
+	// 加载配置文件
 	flag.Parse()
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
@@ -30,6 +31,7 @@ func main() {
 	defer ctx.EntertainmentScanner.Stop()
 	defer ctx.CompetitionScanner.Stop()
 
+	// 启动RPC服务
 	srv := server.NewMatchServiceServer(ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {

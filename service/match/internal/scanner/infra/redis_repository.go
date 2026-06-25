@@ -25,6 +25,7 @@ func NewRedisTicketRepo(rdb redis.UniversalClient) *RedisTicketRepo {
 	return &RedisTicketRepo{rdb: rdb}
 }
 
+// ticketKey 票键
 func (r *RedisTicketRepo) ticketKey(ticketID string) string {
 	return ticketKeyPrefix + ticketID
 }

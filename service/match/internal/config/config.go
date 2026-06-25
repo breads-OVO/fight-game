@@ -9,9 +9,9 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 
-	MySQL config.MySQLConfig // MySQL配置
-	Redis config.RedisConfig // Redis配置
-	Match MatchConfig        // 匹配配置
+	MySQL      config.MySQLConfig // MySQL配置
+	RedisCache config.RedisConfig // Redis配置
+	Match      MatchConfig        // 匹配配置
 }
 
 type MatchConfig struct {

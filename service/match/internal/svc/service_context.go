@@ -38,7 +38,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	db := commonConf.InitMySQL(&c.MySQL)
 
 	// 初始化 Redis
-	redisClient := commonConf.InitRedis(&c.Redis)
+	redisClient := commonConf.InitRedis(&c.RedisCache)
 
 	// 创建票存储仓储（共享）
 	repo := infra.NewRedisTicketRepo(redisClient)
@@ -50,11 +50,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	// 结果处理器（后续可对接 Game 服务）
 	handler := &handler.NoopResultHandler{}
 
-	// --- 娱乐匹配（List + 简单FIFO） ---
+	// 娱乐匹配（List + 简单FIFO）
 	entertainmentStrategy := &strategy.EntertainmentStrategy{}
 	entertainmentSvc := match.NewMatchService(entertainmentQueue, repo, entertainmentStrategy, handler)
 
-	// --- 竞技匹配（ZSet + 段位分扩圈） ---
+	//竞技匹配（ZSet + 段位分扩圈）
 	competitionStrategy := strategy.NewCompetitiveStrategy(
 		c.Match.RatingRange,
 		c.Match.RatingRangeMax,

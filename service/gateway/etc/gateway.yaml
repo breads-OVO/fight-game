@@ -16,6 +16,12 @@ AuthRpc:
       - 127.0.0.1:2379
     Key: fight.auth
 
+MatchRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.match
+
 Etcd:
   Hosts:
     - 127.0.0.1:2379
