@@ -104,11 +104,12 @@ func (r *RedisTicketRepo) RemovePlayerMatch(ctx context.Context, playerID string
 func (r *RedisTicketRepo) UpdateMatched(ctx context.Context, result *match.MatchResult) error {
 	script := `
 		local roomId = ARGV[1]
-		local playerIds = ARGV[2]  -- "pid1,pid2"
+		local playerIds = ARGV[2]
+		local gameAddr = ARGV[3]
 		for i, ticketKey in ipairs(KEYS) do
-			redis.call('HSET', ticketKey, 'status', 1, 'roomId', roomId, 'playerIds', playerIds)
+			redis.call('HSET', ticketKey, 'status', 1, 'roomId', roomId, 'playerIds', playerIds, 'gameAddr', gameAddr)
 		end
-		for i = 3, #ARGV do
+		for i = 4, #ARGV do
 			redis.call('DEL', 'match:player:' .. ARGV[i])
 		end
 		return 1
@@ -124,7 +125,7 @@ func (r *RedisTicketRepo) UpdateMatched(ctx context.Context, result *match.Match
 		}
 		playerIDStr += pid
 	}
-	args := append([]string{result.RoomID, playerIDStr}, result.PlayerIDs...)
+	args := append([]string{result.RoomID, playerIDStr, result.GameAddr}, result.PlayerIDs...)
 	_, err := r.rdb.Eval(ctx, script, keys, args).Result()
 	return err
 }

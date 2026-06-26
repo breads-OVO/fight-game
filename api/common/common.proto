@@ -42,6 +42,18 @@ enum WSMsgType {
   MSG_MATCH_STATUS_RESPONSE = 2006;               // 匹配状态查询响应
 
   // Game 相关 (3000~3999)
+  MSG_GAME_INPUT = 3001;                // 帧输入（客户端→Game）
+  MSG_GAME_INPUT_RESPONSE = 3002;       // 帧输入响应
+  MSG_GAME_FRAME = 3003;                // 帧状态推送（Game→客户端）
+  MSG_GAME_PICK = 3004;                 // 选人请求
+  MSG_GAME_PICK_RESPONSE = 3005;        // 选人响应
+  MSG_GAME_BAN = 3006;                  // 禁用请求（竞技）
+  MSG_GAME_BAN_RESPONSE = 3007;         // 禁用响应
+  MSG_GAME_READY = 3008;                // 准备确认
+  MSG_GAME_STAGE_STATE = 3009;          // 阶段状态推送
+  MSG_GAME_ROUND_RESULT = 3010;         // 回合结果推送
+  MSG_GAME_GAME_RESULT = 3011;          // 游戏结束推送
+  MSG_GAME_SETTLEMENT = 3012;           // 结算信息推送
 
 
   // System 相关 (9000~9999)

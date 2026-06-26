@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package game;
+import "api/match/match_queue.proto";
+option go_package = "fight-game/pb/game";
+
+service GameService {
+  // 匹配成功后由 Match 服务调用，创建游戏房间
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+}
+
+message CreateRoomRequest {
+  string roomId = 1;                          // 房间ID
+  match.queue.GameType gameType = 2;          //游戏类型
+  repeated string playerIds = 3;              // 玩家列表
+  int32 rating = 4;                           // 玩家段位分
+}
+
+message CreateRoomResponse {
+  bool success = 1;
+  string message = 2;
+  string wsAddr = 3;            // Game 服务 WS 直连地址（客户端用）
+}

@@ -1,0 +1,27 @@
+Name: game.service
+ListenOn: 0.0.0.0:9004
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: fight.game
+
+MySQL:
+  DataSource: root:123456@tcp(127.0.0.1:3306)/fight_game?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConns: 100
+  MaxIdleConns: 10
+
+RedisCache:
+  Host: 127.0.0.1:6379
+  Type: node
+  Pass:
+  DB: 0
+
+Game:
+  WsAddr: :9005              # WebSocket 直连地址（客户端连接）
+  PickTimeout: 60            # 选人阶段超时（秒）
+  BanTimeout: 30             # 禁用阶段超时（秒，竞技）
+  FightTimeout: 60           # 每回合战斗超时（秒）
+  Characters: 3              # 每人可选角色数
+
+Log:
+  Level: info

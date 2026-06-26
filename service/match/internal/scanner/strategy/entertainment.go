@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"context"
+	pbQueue "fight-game/pb/match/queue"
 	"fight-game/pkg/common/utils"
 	"fight-game/service/match/internal/scanner/match"
 	"time"
@@ -38,6 +39,7 @@ func (s *EntertainmentStrategy) Match(ctx context.Context, queue match.MatchQueu
 		TicketIDs: ticketIDs,
 		PlayerIDs: []string{t1.PlayerId, t2.PlayerId},
 		MatchedAt: time.Now().Unix(),
+		GameType:  pbQueue.GameType_ENTERTAINMENT,
 	}
 
 	// 4. 原子更新状态（Lua脚本内部已完成：更新票状态 + 删除玩家匹配键）

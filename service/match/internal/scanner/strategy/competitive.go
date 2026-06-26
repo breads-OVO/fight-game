@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"context"
+	pbQueue "fight-game/pb/match/queue"
 	"fight-game/pkg/common/utils"
 	"fight-game/service/match/internal/scanner/match"
 	"time"
@@ -81,6 +82,8 @@ func (s *CompetitiveStrategy) tryMatchInRange(ctx context.Context, queue match.M
 		TicketIDs: ticketIDs,
 		PlayerIDs: []string{t1.PlayerId, t2.PlayerId},
 		MatchedAt: time.Now().Unix(),
+		GameType:  pbQueue.GameType_COMPETITION,
+		Rating:    int32(max(t1.RankScore, t2.RankScore)),
 	}
 
 	if err := repo.UpdateMatched(ctx, result); err != nil {

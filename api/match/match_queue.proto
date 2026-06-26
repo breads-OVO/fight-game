@@ -61,4 +61,5 @@ message MatchStatusResponse {
   MatchStatus status = 1;
   string roomId = 2; // 匹配成功后分配的房间ID
   repeated string playerIds = 3; // 匹配到的玩家列表
+  string gameAddr = 4; // Game 服务直连地址（匹配成功后）
 }

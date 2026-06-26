@@ -12,6 +12,7 @@ type Config struct {
 	MySQL      config.MySQLConfig // MySQL配置
 	RedisCache config.RedisConfig // Redis配置
 	Match      MatchConfig        // 匹配配置
+	GameRpc    zrpc.RpcClientConf // Game 服务 RPC 客户端配置
 }
 
 type MatchConfig struct {

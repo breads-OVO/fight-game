@@ -1,6 +1,8 @@
 package match
 
-import "fight-game/pb/match/queue"
+import (
+	"fight-game/pb/match/queue"
+)
 
 // Ticket 匹配票
 type Ticket struct {
@@ -13,8 +15,11 @@ type Ticket struct {
 
 // MatchResult 一次匹配产生的对局结果
 type MatchResult struct {
-	RoomID    string   // 房间ID
-	TicketIDs []string // 匹配票ID
-	PlayerIDs []string // 玩家ID
-	MatchedAt int64    // 匹配时间
+	RoomID    string         // 房间ID
+	TicketIDs []string       // 匹配票ID
+	PlayerIDs []string       // 玩家ID
+	MatchedAt int64          // 匹配时间
+	GameType  queue.GameType // 游戏类型
+	GameAddr  string         // Game 服务直连地址
+	Rating    int32          // 段位分
 }

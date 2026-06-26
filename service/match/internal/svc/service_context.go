@@ -12,6 +12,7 @@ import (
 	"fight-game/service/match/internal/scanner/strategy"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/zeromicro/go-zero/zrpc"
 	"gorm.io/gorm"
 )
 
@@ -47,12 +48,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	entertainmentQueue := infra.NewRedisMatchQueue(redisClient, entertainmentQueueKey)
 	competitionQueue := infra.NewRedisCompetitionQueue(redisClient, competitionQueueKey)
 
-	// 结果处理器（后续可对接 Game 服务）
-	handler := &handler.NoopResultHandler{}
+	// 结果处理器
+	gameRpcClient := zrpc.MustNewClient(c.GameRpc)
+	resultHandler := handler.NewMatchResultHandler(gameRpcClient)
 
 	// 娱乐匹配（List + 简单FIFO）
 	entertainmentStrategy := &strategy.EntertainmentStrategy{}
-	entertainmentSvc := match.NewMatchService(entertainmentQueue, repo, entertainmentStrategy, handler)
+	entertainmentSvc := match.NewMatchService(entertainmentQueue, repo, entertainmentStrategy, resultHandler)
 
 	//竞技匹配（ZSet + 段位分扩圈）
 	competitionStrategy := strategy.NewCompetitiveStrategy(
@@ -60,7 +62,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		c.Match.RatingRangeMax,
 		c.Match.RatingRangeStep,
 	)
-	competitionSvc := match.NewMatchService(competitionQueue, repo, competitionStrategy, handler)
+	competitionSvc := match.NewMatchService(competitionQueue, repo, competitionStrategy, resultHandler)
 
 	// 创建各自的扫描器，间隔1秒
 	entertainmentScanner := scanner.NewMatchScanner(entertainmentSvc, time.Second, "entertainment")

@@ -49,9 +49,9 @@ func (l *MatchStatusLogic) GetMatchStatus(in *queue.MatchStatusRequest) (*queue.
 			_ = ticketData // 已有基础信息
 		}
 
-		// 从 repository 获取额外信息：使用 raw Redis 读取 roomId 和 playerIds
+		// 从 repository 获取额外信息：使用 raw Redis 读取 roomId, playerIds, gameAddr
 		rdb := l.svcCtx.Redis
-		vals, err := rdb.HMGet(l.ctx, "match:ticket:"+in.TicketId, "roomId", "playerIds").Result()
+		vals, err := rdb.HMGet(l.ctx, "match:ticket:"+in.TicketId, "roomId", "playerIds", "gameAddr").Result()
 		if err == nil {
 			if len(vals) >= 1 && vals[0] != nil {
 				resp.RoomId = vals[0].(string)
@@ -59,6 +59,9 @@ func (l *MatchStatusLogic) GetMatchStatus(in *queue.MatchStatusRequest) (*queue.
 			if len(vals) >= 2 && vals[1] != nil {
 				playerIdsStr := vals[1].(string)
 				resp.PlayerIds = strings.Split(playerIdsStr, ",")
+			}
+			if len(vals) >= 3 && vals[2] != nil {
+				resp.GameAddr = vals[2].(string)
 			}
 		}
 	}

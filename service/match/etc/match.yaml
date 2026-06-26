@@ -22,5 +22,11 @@ Match:
   RatingRangeMax: 500       # 最大匹配分差
   RatingRangeStep: 50       # 匹配分差步进（随时间扩大）
 
+GameRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.game
+
 Log:
   Level: info
