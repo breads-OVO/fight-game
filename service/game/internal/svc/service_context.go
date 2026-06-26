@@ -39,6 +39,11 @@ func (sc *ServiceContext) CreateAndStartRoom(roomId string, gameType pbQueue.Gam
 		WsAddr:       sc.Config.Game.WsAddr,
 	})
 
+	// 设置清理回调：结算完成后自动从管理器移除
+	r.SetCleanup(func() {
+		sc.RemoveRoom(roomId)
+	})
+
 	sc.roomsMu.Lock()
 	sc.rooms[roomId] = r
 	sc.roomCount++

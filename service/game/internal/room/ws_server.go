@@ -51,7 +51,8 @@ func (gc *GameConn) ReadLoop(room *Room) {
 		gc.closed = true
 		gc.conn.Close()
 		gc.mu.Unlock()
-		room.UnregisterConn(gc.PlayerId)
+		room.UnregisterConn(gc.PlayerId, gc)
+		room.MarkDisconnected(gc.PlayerId)
 	}()
 
 	for {
@@ -119,6 +120,7 @@ func (ws *WSServer) Stop() error {
 
 // handlePlay 处理游戏连接请求
 // 客户端连接: ws://gameAddr/play?roomId=xxx&playerId=xxx
+// 支持断线重连：同一玩家可以多次连接，旧连接会自动关闭
 func (ws *WSServer) handlePlay(w http.ResponseWriter, r *http.Request) {
 	roomId := r.URL.Query().Get("roomId")
 	playerId := r.URL.Query().Get("playerId")
@@ -134,6 +136,11 @@ func (ws *WSServer) handlePlay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !room.HasPlayer(playerId) {
+		http.Error(w, "player not in room", http.StatusForbidden)
+		return
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
@@ -141,6 +148,7 @@ func (ws *WSServer) handlePlay(w http.ResponseWriter, r *http.Request) {
 
 	gc := NewGameConn(playerId, roomId, conn)
 	room.RegisterConn(playerId, gc)
+	room.MarkReconnected(playerId)
 
 	gc.ReadLoop(room)
 }

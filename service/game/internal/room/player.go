@@ -3,6 +3,7 @@ package room
 import (
 	"fight-game/pb/game"
 	"sync"
+	"time"
 )
 
 // PlayerData 玩家在房间中的数据
@@ -28,6 +29,10 @@ type PlayerData struct {
 	LatestInput int32 // 最新帧输入（actionMask）
 	InputFrame  int32 // 输入对应的帧号
 	InputReady  bool  // 是否有新输入
+
+	// 断线重连
+	Connected      bool      // 是否有活跃的 WebSocket 连接
+	DisconnectTime time.Time // 断线时间戳（零值表示未断线）
 }
 
 const defaultMaxHP = 100

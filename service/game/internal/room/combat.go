@@ -154,16 +154,25 @@ func (r *Room) startRound() {
 			r.broadcast(data)
 		}
 
-		// 5. 检查回合结束
-		if r.RoundEnded {
+		// 5. 检查断线判负
+		if r.checkDisconnectForfeit(entities) {
+			entityMu.Unlock()
 			r.endRound(entities)
 			return
 		}
 
-		// 6. 检查超时
+		// 6. 检查回合结束
+		if r.RoundEnded {
+			entityMu.Unlock()
+			r.endRound(entities)
+			return
+		}
+
+		// 7. 检查超时
 		if r.FrameNo >= timeoutFrames {
 			r.RoundTimeout = true
 			r.RoundEnded = true
+			entityMu.Unlock()
 			r.endRound(entities)
 			return
 		}
@@ -531,7 +540,7 @@ func (r *Room) endGame(winnerId string) {
 // startSettlement 结算阶段
 func (r *Room) startSettlement() {
 	r.mu.Lock()
-	r.stage = game.GameStage_STAGE_FIGHT
+	r.stage = game.GameStage_STAGE_SETTLEMENT
 	r.mu.Unlock()
 
 	settlement := &game.SettlementInfo{
@@ -543,4 +552,21 @@ func (r *Room) startSettlement() {
 	if data != nil {
 		r.broadcast(data)
 	}
+}
+
+// checkDisconnectForfeit 检查是否有玩家断线超时，超时则对手获胜
+func (r *Room) checkDisconnectForfeit(entities map[string]*Entity) bool {
+	for _, p := range r.Players {
+		if p.Connected || p.DisconnectTime.IsZero() {
+			continue
+		}
+		if time.Since(p.DisconnectTime) >= disconnectTimeout {
+			winner := r.opponentOf(p.PlayerId)
+			r.log("玩家 %s 断线超过 %v，%s 获胜", p.PlayerId, disconnectTimeout, winner.PlayerId)
+			r.RoundWinner = winner.PlayerId
+			r.RoundEnded = true
+			return true
+		}
+	}
+	return false
 }

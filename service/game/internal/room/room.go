@@ -13,6 +13,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const (
+	disconnectTimeout = 5 * time.Second // 断线判负超时
+)
+
 // RoomConfig 房间配置
 type RoomConfig struct {
 	PickTimeout  int    // 选人超时（秒）
@@ -58,6 +62,9 @@ type Room struct {
 	// 连接管理
 	conns   map[string]*GameConn // playerId → WS连接
 	connsMu sync.RWMutex
+
+	// 房间清理回调（结算后自动调用）
+	onCleanup func()
 }
 
 // StageState 阶段状态（通过 channel 通知外部）
@@ -142,7 +149,7 @@ func (r *Room) broadcastStageState(stage game.GameStage, countdown int) {
 		Stage:     stage,
 		Countdown: int32(countdown),
 	}
-	data, _ := encodeProtobuf(state)
+	data, _ := proto.Marshal(state)
 	if data != nil {
 		r.broadcast(data)
 	}
@@ -151,14 +158,20 @@ func (r *Room) broadcastStageState(stage game.GameStage, countdown int) {
 // RegisterConn 注册玩家WS连接
 func (r *Room) RegisterConn(playerId string, conn *GameConn) {
 	r.connsMu.Lock()
+	// 关闭旧连接（如果存在）
+	if old, ok := r.conns[playerId]; ok {
+		old.Close()
+	}
 	r.conns[playerId] = conn
 	r.connsMu.Unlock()
 }
 
-// UnregisterConn 注销玩家WS连接
-func (r *Room) UnregisterConn(playerId string) {
+// UnregisterConn 注销玩家WS连接（只有同一连接对象才删除，防止重连竞争）
+func (r *Room) UnregisterConn(playerId string, conn *GameConn) {
 	r.connsMu.Lock()
-	delete(r.conns, playerId)
+	if r.conns[playerId] == conn {
+		delete(r.conns, playerId)
+	}
 	r.connsMu.Unlock()
 }
 
@@ -172,13 +185,45 @@ func (r *Room) GetPlayer(playerId string) *PlayerData {
 	return nil
 }
 
-// encodeProtobuf 简单 pb 序列化辅助（用于广播）
-// 实际序列化使用 proto.Marshal，这里用 interface 作为签名
-var encodeProtobuf func(msg interface{}) ([]byte, error)
+// HasPlayer 检查玩家是否属于该房间
+func (r *Room) HasPlayer(playerId string) bool {
+	for _, p := range r.Players {
+		if p.PlayerId == playerId {
+			return true
+		}
+	}
+	return false
+}
 
-// SetEncoder 设置编码器（由外部注入）
-func SetEncoder(fn func(interface{}) ([]byte, error)) {
-	encodeProtobuf = fn
+// MarkDisconnected 标记玩家断线
+func (r *Room) MarkDisconnected(playerId string) {
+	for _, p := range r.Players {
+		if p.PlayerId == playerId {
+			p.Connected = false
+			p.DisconnectTime = time.Now()
+			r.log("玩家 %s 断线", playerId)
+			return
+		}
+	}
+}
+
+// MarkReconnected 标记玩家重连
+func (r *Room) MarkReconnected(playerId string) {
+	for _, p := range r.Players {
+		if p.PlayerId == playerId {
+			p.Connected = true
+			p.DisconnectTime = time.Time{}
+			r.log("玩家 %s 重连成功", playerId)
+			return
+		}
+	}
+}
+
+// SetCleanup 设置房间清理回调（结算后自动调用）
+func (r *Room) SetCleanup(fn func()) {
+	r.mu.Lock()
+	r.onCleanup = fn
+	r.mu.Unlock()
 }
 
 // log 房间日志
