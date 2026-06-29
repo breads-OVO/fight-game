@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package mail;
+option go_package = "fight-game/pb/mail";
+
+import "api/mail/mail.proto";
+
+// MailService gRPC 定义
+service MailService {
+  // 发送邮件
+  rpc SendMail(SendMailRequest) returns (SendMailResponse);
+  // 获取邮件列表
+  rpc GetMailList(GetMailListRequest) returns (GetMailListResponse);
+  // 获取邮件详情
+  rpc GetMailDetail(GetMailDetailRequest) returns (GetMailDetailResponse);
+  // 标记已读
+  rpc ReadMail(ReadMailRequest) returns (ReadMailResponse);
+  // 领取附件
+  rpc ClaimAttachment(ClaimAttachmentRequest) returns (ClaimAttachmentResponse);
+  // 删除邮件
+  rpc DeleteMail(DeleteMailRequest) returns (DeleteMailResponse);
+}

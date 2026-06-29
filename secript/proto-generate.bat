@@ -25,7 +25,9 @@ protoc --proto_path=. ^
        api/player/player_asset.proto ^
        api/player/player_currency.proto ^
        api/player/player_rank.proto ^
-       api/player/player_service.proto
+       api/player/player_service.proto ^
+       api/mail/mail.proto ^
+       api/mail/mail_service.proto
 if errorlevel 1 (
     echo 错误: proto 生成失败
     pause
