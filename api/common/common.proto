@@ -83,6 +83,19 @@ enum WSMsgType {
   MSG_GAME_GAME_RESULT = 3011;          // 游戏结束推送
   MSG_GAME_SETTLEMENT = 3012;           // 结算信息推送
 
+  // Mail 相关 (5000~5999)
+  MSG_MAIL_GET_LIST = 5001;                         // 获取邮件列表
+  MSG_MAIL_GET_LIST_RESPONSE = 5002;                // 获取邮件列表响应
+  MSG_MAIL_GET_DETAIL = 5003;                       // 获取邮件详情
+  MSG_MAIL_GET_DETAIL_RESPONSE = 5004;              // 获取邮件详情响应
+  MSG_MAIL_SEND = 5005;                             // 发送邮件
+  MSG_MAIL_SEND_RESPONSE = 5006;                    // 发送邮件响应
+  MSG_MAIL_READ = 5007;                             // 标记已读
+  MSG_MAIL_READ_RESPONSE = 5008;                    // 标记已读响应
+  MSG_MAIL_CLAIM_ATTACHMENT = 5009;                 // 领取附件
+  MSG_MAIL_CLAIM_ATTACHMENT_RESPONSE = 5010;        // 领取附件响应
+  MSG_MAIL_DELETE = 5011;                           // 删除邮件
+  MSG_MAIL_DELETE_RESPONSE = 5012;                  // 删除邮件响应
 
   // System 相关 (9000~9999)
   MSG_HEARTBEAT_PING = 9001;

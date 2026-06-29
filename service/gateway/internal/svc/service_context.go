@@ -2,6 +2,7 @@ package svc
 
 import (
 	"fight-game/pb/auth"
+	"fight-game/pb/mail"
 	"fight-game/pb/match"
 	"fight-game/pb/player"
 	"fight-game/service/gateway/internal/config"
@@ -21,6 +22,7 @@ type ServiceContext struct {
 	MatchClient  match.MatchServiceClient
 	PlayerRpc    zrpc.Client
 	PlayerClient player.PlayerServiceClient
+	MailClient   mail.MailServiceClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -43,6 +45,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if c.PlayerRpc.Etcd.Key != "" {
 		svc.PlayerRpc = zrpc.MustNewClient(c.PlayerRpc)
 		svc.PlayerClient = player.NewPlayerServiceClient(svc.PlayerRpc.Conn())
+	}
+
+	if c.MailRpc.Etcd.Key != "" {
+		mailRpc := zrpc.MustNewClient(c.MailRpc)
+		svc.MailClient = mail.NewMailServiceClient(mailRpc.Conn())
 	}
 
 	return svc

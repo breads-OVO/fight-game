@@ -10,6 +10,7 @@ type Config struct {
 	AuthRpc       zrpc.RpcClientConf // Auth gRPC 客户端配置
 	MatchRpc      zrpc.RpcClientConf // Match gRPC 客户端配置
 	PlayerRpc     zrpc.RpcClientConf // Player gRPC 客户端配置
+	MailRpc       zrpc.RpcClientConf // Mail gRPC 客户端配置
 	WebSocket     WebSocket          // websocket配置
 }
 

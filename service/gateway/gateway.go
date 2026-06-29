@@ -40,6 +40,7 @@ func initRouter(svcCtx *svc.ServiceContext) *router.Router {
 	r.RegisterModule(handler.NewAuthHandler(svcCtx).Routes())
 	r.RegisterModule(handler.NewMatchHandler(svcCtx).Routes())
 	r.RegisterModule(handler.NewPlayerHandler(svcCtx).Routes())
+	r.RegisterModule(handler.NewMailHandler(svcCtx).Routes())
 
 	return r
 }

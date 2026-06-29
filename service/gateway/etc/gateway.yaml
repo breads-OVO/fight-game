@@ -28,6 +28,12 @@ PlayerRpc:
       - 127.0.0.1:2379
     Key: fight.player
 
+MailRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.mail
+
 Etcd:
   Hosts:
     - 127.0.0.1:2379
