@@ -22,6 +22,12 @@ MatchRpc:
       - 127.0.0.1:2379
     Key: fight.match
 
+PlayerRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.player
+
 Etcd:
   Hosts:
     - 127.0.0.1:2379

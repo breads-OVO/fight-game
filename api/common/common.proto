@@ -41,6 +41,34 @@ enum WSMsgType {
   MSG_MATCH_STATUS = 2005;                        // 匹配状态查询
   MSG_MATCH_STATUS_RESPONSE = 2006;               // 匹配状态查询响应
 
+  // Player 相关 (4000~4999)
+  MSG_PLAYER_GET_PROFILE = 4001;                                // 获取玩家信息
+  MSG_PLAYER_GET_PROFILE_RESPONSE = 4002;                       // 获取玩家信息响应
+  MSG_PLAYER_LEVEL_UP = 4003;                                   // 升级
+  MSG_PLAYER_LEVEL_UP_RESPONSE = 4004;                          // 升级响应
+  MSG_PLAYER_CHANGE_NICKNAME = 4005;                            // 修改昵称
+  MSG_PLAYER_CHANGE_NICKNAME_RESPONSE = 4006;                   // 修改昵称响应
+  MSG_PLAYER_CHANGE_AVATAR = 4007;                              // 修改头像
+  MSG_PLAYER_CHANGE_AVATAR_RESPONSE = 4008;                     // 修改头像响应
+  MSG_PLAYER_CHANGE_SIGNATURE = 4009;                           // 修改签名
+  MSG_PLAYER_CHANGE_SIGNATURE_RESPONSE = 4010;                  // 修改签名响应
+  MSG_PLAYER_GET_CURRENCIES = 4011;                             // 获取货币
+  MSG_PLAYER_GET_CURRENCIES_RESPONSE = 4012;                    // 获取货币响应
+  MSG_PLAYER_CHANGE_CURRENCY = 4013;                            // 修改货币
+  MSG_PLAYER_CHANGE_CURRENCY_RESPONSE = 4014;                   // 修改货币响应
+  MSG_PLAYER_GET_INVENTORY = 4015;                              // 获取背包
+  MSG_PLAYER_GET_INVENTORY_RESPONSE = 4016;                     // 获取背包响应
+  MSG_PLAYER_ADD_ASSET = 4017;                                  // 添加资产
+  MSG_PLAYER_ADD_ASSET_RESPONSE = 4018;                         // 添加资产响应
+  MSG_PLAYER_REMOVE_ASSET = 4019;                               // 移除资产
+  MSG_PLAYER_REMOVE_ASSET_RESPONSE = 4020;                      // 移除资产响应
+  MSG_PLAYER_GET_RATING = 4021;                                 // 获取段位分
+  MSG_PLAYER_GET_RATING_RESPONSE = 4022;                        // 获取段位分响应
+  MSG_PLAYER_UPDATE_RATING = 4023;                              // 修改段位分
+  MSG_PLAYER_UPDATE_RATING_RESPONSE = 4024;                     // 修改段位分响应
+  MSG_PLAYER_GET_MATCH_STATS = 4025;                            // 获取对战统计
+  MSG_PLAYER_GET_MATCH_STATS_RESPONSE = 4026;                   // 获取对战统计响应
+
   // Game 相关 (3000~3999)
   MSG_GAME_INPUT = 3001;                // 帧输入（客户端→Game）
   MSG_GAME_INPUT_RESPONSE = 3002;       // 帧输入响应

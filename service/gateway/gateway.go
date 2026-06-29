@@ -39,6 +39,7 @@ func initRouter(svcCtx *svc.ServiceContext) *router.Router {
 	r.RegisterModule(handler.NewSystemHandler().Routes())
 	r.RegisterModule(handler.NewAuthHandler(svcCtx).Routes())
 	r.RegisterModule(handler.NewMatchHandler(svcCtx).Routes())
+	r.RegisterModule(handler.NewPlayerHandler(svcCtx).Routes())
 
 	return r
 }
