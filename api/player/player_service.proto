@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package player;
+option go_package = "fight-game/pb/player";
+import "api/player/player.proto";
+import "api/player/player_currency.proto";
+import "api/player/player_asset.proto";
+import "api/player/player_rank.proto";
+
+
+// PlayerService gRPC 定义
+service PlayerService {
+  //获取玩家信息
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  //升级
+  rpc LevelUp(LevelUpRequest) returns (LevelUpResponse);
+  //修改昵称
+  rpc ChangeNickname(UpdateNicknameRequest) returns (UpdateNicknameResponse);
+  //修改头像
+  rpc ChangeAvatar(UpdateAvatarRequest) returns (UpdateAvatarResponse);
+  //修改签名
+  rpc ChangeSignature(UpdateSignatureRequest) returns (UpdateSignatureResponse);
+
+  //获取货币信息
+  rpc GetCurrencies(player.currency.GetCurrenciesRequest) returns (player.currency.GetCurrenciesResponse);
+  //修改货币
+  rpc ChangeCurrency(player.currency.ChangeCurrencyRequest) returns (player.currency.ChangeCurrencyResponse);
+
+  //获取背包信息
+  rpc GetInventory(player.asset.GetInventoryRequest) returns (player.asset.GetInventoryResponse);
+  //添加资产
+  rpc AddAsset(player.asset.AddAssetRequest) returns (player.asset.AddAssetResponse);
+  //移除资产
+  rpc RemoveAsset(player.asset.RemoveAssetRequest) returns (player.asset.RemoveAssetResponse);
+
+  //获取段位分
+  rpc GetRating(player.rank.GetRatingRequest) returns (player.rank.GetRatingResponse);
+  //修改段位分
+  rpc UpdateRating(player.rank.UpdateRatingRequest) returns (player.rank.UpdateRatingResponse);
+  //获取段位信息
+  rpc GetMatchStats(player.rank.GetMatchStatsRequest) returns (player.rank.GetMatchStatsResponse);
+
+}

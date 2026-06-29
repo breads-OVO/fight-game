@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package player;
+option go_package = "fight-game/pb/player";
+
+
+// PlayerProfile 玩家基本信息
+message PlayerProfile {
+  string playerId = 1;        // 玩家ID
+  string nickname = 2;        // 昵称
+  int32 level = 3;            // 等级
+  int64 exp = 4;              // 经验
+  string avatarUrl = 5;       // 头像
+  string signature = 6;       // 个性签名
+  int64 createdAt = 7;        // 创建时间
+  int64 updatedAt = 8;        // 更新时间
+}
+
+//获取玩家基本信息
+message GetProfileRequest {
+  string playerId = 1;
+}
+message GetProfileResponse {
+  PlayerProfile profile = 1;
+}
+
+//升级
+message LevelUpRequest {
+  string playerId = 1;
+  int32 expGained = 2;
+}
+message LevelUpResponse {
+  PlayerProfile profile = 1;
+}
+
+//修改昵称
+message UpdateNicknameRequest {
+  string playerId = 1;
+  string newNickname = 2;
+}
+message UpdateNicknameResponse {
+  PlayerProfile profile = 1;
+}
+
+//修改头像
+message UpdateAvatarRequest {
+  string playerId = 1;
+  string newAvatarUrl = 2;
+}
+message UpdateAvatarResponse {
+  PlayerProfile profile = 1;
+}
+
+//修改个性签名
+message UpdateSignatureRequest {
+  string playerId = 1;
+  string newSignature = 2;
+}
+message UpdateSignatureResponse {
+  PlayerProfile profile = 1;
+}
+
+

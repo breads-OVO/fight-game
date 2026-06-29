@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package player.asset;
+option go_package = "fight-game/pb/player/asset";
+
+//资产类型
+enum AssetType {
+  NONE = 0;       // 无
+  CHARACTER=1;    // 角色
+  SKIN = 2;       // 皮肤
+  TITLE = 3;      // 称号
+}
+
+enum AssetStatus {
+  NORMAL = 0;     // 正常
+  LOCKED = 1;     // 锁定
+  TEMP = 2;       // 临时
+}
+
+//资产信息
+message AssetInfo {
+  string id = 1;              // 玩家背包内资产ID
+  string assetId = 2;         // 资产ID
+  AssetStatus status = 3;     // 资产状态
+  AssetType assetType = 4;    // 资产类型
+  int32 quantity = 5;         // 数量
+  int64 expireAt = 6;         // 到期时间
+  int64 createdAt = 7;        // 创建时间
+}
+
+//获取全部资产
+message GetInventoryRequest {
+  string playerId = 1;
+}
+message GetInventoryResponse {
+  repeated AssetInfo assets = 1;
+}
+
+//添加资产
+message AddAssetRequest {
+  string playerId = 1;       // 玩家ID
+  string assetId = 2;        // 资产ID
+  AssetType assetType = 3;   // 资产类型
+  int32 quantity = 4;        // 数量
+  int64 expire_at = 5;       // 0=永久
+}
+message AddAssetResponse {
+  AssetInfo item = 1;
+}
+
+//移除资产
+message RemoveAssetRequest {
+  string playerId = 1;
+  string id = 2;            // 玩家内唯一ID
+  int32 quantity = 3;
+}
+message RemoveAssetResponse {
+  bool success = 1;
+}

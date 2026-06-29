@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package player.rank;
+option go_package = "fight-game/pb/player/rank";
+
+// RatingInfo 段位信息
+message RatingInfo {
+  string playerId = 1;  // 玩家ID
+  int32 rating = 2;     // 段位分
+}
+
+//对战统计
+message MatchStatsInfo {
+  int32 totalGames = 1;     // 总对局数
+  int32 wins = 2;           // 胜局数
+  int32 Loses = 3;         // 负局数
+  double winRate = 4;       // 胜率
+  string season = 5;        // 赛季
+}
+
+
+//获取段位分
+message GetRatingRequest {
+  string playerId = 1;
+  string season = 2;
+}
+message GetRatingResponse {
+  RatingInfo rating = 1;
+}
+
+//更新段位分
+message UpdateRatingRequest {
+  string playerId = 1;
+  int32 delta = 2;        // 正数增加，负数减少
+}
+message UpdateRatingResponse {
+  RatingInfo rating = 1;
+}
+
+//获取对战统计
+message GetMatchStatsRequest {
+  string playerId = 1;
+}
+message GetMatchStatsResponse {
+  MatchStatsInfo stats = 1;
+}

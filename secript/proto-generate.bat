@@ -20,7 +20,12 @@ protoc --proto_path=. ^
        api/match/match_queue.proto ^
        api/match/match_service.proto ^
        api/game/game.proto ^
-       api/game/game_service.proto
+       api/game/game_service.proto ^
+       api/player/player.proto  ^
+       api/player/player_asset.proto ^
+       api/player/player_currency.proto ^
+       api/player/player_rank.proto ^
+       api/player/player_service.proto
 if errorlevel 1 (
     echo 错误: proto 生成失败
     pause

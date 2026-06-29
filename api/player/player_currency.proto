@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package player.currency;
+option go_package = "fight-game/pb/player/currency";
+
+//货币类型
+enum CurrencyType {
+  None = 0;        // 无
+  GOLD = 1;        // 金币
+  Point = 2;       // 点券
+}
+
+// 货币信息
+message CurrencyInfo {
+  CurrencyType currencyType = 1;      // 货币类型
+  int64 count = 2;                    // 数量
+}
+
+// 获取货币信息
+message GetCurrenciesRequest {
+  string playerId = 1;                // 玩家id
+}
+
+message GetCurrenciesResponse {
+  repeated CurrencyInfo currencies = 1;
+}
+
+//修改货币数量
+message ChangeCurrencyRequest {
+  string playerId = 1;                 // 玩家id
+  CurrencyType currencyType = 2;       // 货币类型
+  bool changeType=3;                   // true:增加 false:减少
+  int64 count = 4;                     // 数量
+  string reason = 5;                   // 变更原因（审计用）
+}
+message ChangeCurrencyResponse {
+  CurrencyInfo currency = 1;
+}

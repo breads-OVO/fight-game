@@ -1,0 +1,27 @@
+RpcServer:
+  Name: player.service
+  ListenOn: 0.0.0.0:9010
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.player
+MySQL:
+  DataSource: root:123456@tcp(127.0.0.1:3306)/fight_game?charset=utf8mb4&parseTime=True&loc=Local
+  MaxOpenConns: 100
+  MaxIdleConns: 10
+
+Redis:
+  Host: 127.0.0.1:6379
+  Pass: ""
+  DB: 0
+
+MongoDB:
+  Uri: mongodb://127.0.0.1:27017
+  Database: fight_game
+
+Player:
+  Season: s1
+  RatingDefault: 1000
+
+Log:
+  Level: info
