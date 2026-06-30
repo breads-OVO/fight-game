@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	model.Base
-	Username string `gorm:"unique;size:64"`   // 用户名
+	Username string `gorm:"size:64"`          // 用户名
 	Password string `gorm:"not null;size:64"` // 密码
 	Email    string `gorm:"size:128"`         // 邮箱
 	Phone    string `gorm:"size:16"`          // 手机号
