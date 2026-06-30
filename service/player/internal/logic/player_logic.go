@@ -159,6 +159,46 @@ func (l *PlayerLogic) ChangeSignature(in *player.UpdateSignatureRequest) (*playe
 	}, nil
 }
 
+// SearchPlayer 搜索玩家（按昵称或ID模糊匹配）
+func (l *PlayerLogic) SearchPlayer(in *player.SearchPlayerRequest) (*player.SearchPlayerResponse, error) {
+	keyword := in.GetKeyword()
+	page := int(in.GetPage())
+	pageSize := int(in.GetPageSize())
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 50 {
+		pageSize = 20
+	}
+
+	var total int64
+	var players []model.Player
+
+	// 按昵称或ID模糊搜索
+	likePattern := "%" + keyword + "%"
+	query := l.svcCtx.DB.Model(&model.Player{}).
+		Where("nickname LIKE ? OR player_id LIKE ?", likePattern, likePattern)
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, status.Errorf(codes.Internal, "count players failed: %v", err)
+	}
+
+	if err := query.Offset((page - 1) * pageSize).Limit(pageSize).
+		Find(&players).Error; err != nil {
+		return nil, status.Errorf(codes.Internal, "search players failed: %v", err)
+	}
+
+	profiles := make([]*player.PlayerProfile, 0, len(players))
+	for i := range players {
+		profiles = append(profiles, modelToProfile(&players[i]))
+	}
+
+	return &player.SearchPlayerResponse{
+		Players: profiles,
+		Total:   int32(total),
+	}, nil
+}
+
 // modelToProfile model -> proto 转换
 func modelToProfile(p *model.Player) *player.PlayerProfile {
 	return &player.PlayerProfile{

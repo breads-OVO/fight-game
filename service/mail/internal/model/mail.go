@@ -38,7 +38,8 @@ type MailBody struct {
 
 // Attachment 附件
 type Attachment struct {
-	Type   string `bson:"type"`   // currency/asset
-	ID     string `bson:"id"`     // 货币类型ID或资产ID
-	Amount int32  `bson:"amount"` // 数量
+	Type      string `bson:"type"`       // currency/asset
+	ID        string `bson:"id"`         // 货币类型ID或资产ID
+	Amount    int32  `bson:"amount"`     // 数量
+	AssetType int32  `bson:"asset_type"` // 资产类型（asset时有效）
 }

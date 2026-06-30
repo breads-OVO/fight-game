@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package gateway;
+option go_package = "fight-game/pb/gateway";
+
+// PushService 推送服务（供其他服务调用，通过 Gateway 向在线玩家推送 WS 消息）
+service PushService {
+  // 向指定玩家推送消息
+  rpc PushMessage(PushMessageRequest) returns (PushMessageResponse);
+}
+
+message PushMessageRequest {
+  string playerId = 1;          // 目标玩家ID
+  int32 msgType = 2;            // WS 消息类型
+  bytes body = 3;               // 消息体（Protobuf bytes）
+}
+
+message PushMessageResponse {
+  bool success = 1;             // 是否推送成功
+  string message = 2;           // 推送结果描述
+}
+
+// 推送通知消息体（server→client 推送通知通用结构）
+message PushNotification {
+  string notifyType = 1;        // 通知类型: friend_request/friend_accepted/new_mail/new_chat
+  string title = 2;             // 通知标题
+  string content = 3;           // 通知内容
+  bytes extra = 4;              // 额外数据（可选）
+}

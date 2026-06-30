@@ -1,6 +1,8 @@
 package room
 
 import (
+	"math/rand"
+
 	"fight-game/pb/game"
 	pbQueue "fight-game/pb/match/queue"
 	"time"
@@ -24,31 +26,14 @@ func (r *Room) startPickStage() {
 	timer := time.NewTimer(time.Duration(r.cfg.PickTimeout) * time.Second)
 	defer timer.Stop()
 
-	//TODO 获取玩家资源角色
-	var availableChars []string
+	// 筛选可用角色
+	availableChars := r.filterAvailableCharacters()
 
-	// 如果竞技模式，需要过滤被禁角色
-	if r.GameType == pbQueue.GameType_COMPETITION {
-		banned := r.banCharacter
-		for _, c := range CharacterPool {
-			ban := false
-			for _, b := range banned {
-				if c == b {
-					ban = true
-					break
-				}
-			}
-			if !ban {
-				availableChars = append(availableChars, c)
-			}
-		}
-	} else {
-		availableChars = append([]string{}, CharacterPool...)
+	r.log("可用角色: %d 个", len(availableChars))
+	for _, c := range availableChars {
+		stats := GetCharacterStats(c)
+		r.log("  - %s (%s)", c, stats.Name)
 	}
-
-	r.log("可用角色: %v", availableChars)
-
-	//TODO 向玩家同步可选角色及资源
 
 	// 等待选人完成或超时
 	done := make(chan struct{}, 1)
@@ -62,13 +47,38 @@ func (r *Room) startPickStage() {
 		r.log("选人完成")
 	case <-timer.C:
 		r.log("选人超时，使用默认选择")
-		r.autoPick()
+		r.autoPick(availableChars)
 	case <-r.closeCh:
 		return
 	}
 
 	// 进入战斗阶段
 	r.startFightStage()
+}
+
+// filterAvailableCharacters 筛选可用角色（竞技模式过滤被禁角色）
+func (r *Room) filterAvailableCharacters() []string {
+	var available []string
+
+	if r.GameType == pbQueue.GameType_COMPETITION {
+		banned := r.banCharacter
+		for _, c := range CharacterPool {
+			isBanned := false
+			for _, b := range banned {
+				if c == b {
+					isBanned = true
+					break
+				}
+			}
+			if !isBanned {
+				available = append(available, c)
+			}
+		}
+	} else {
+		available = append([]string{}, CharacterPool...)
+	}
+
+	return available
 }
 
 // HandlePick 处理玩家选人请求
@@ -99,7 +109,13 @@ func (r *Room) HandlePick(playerId string, pick *game.CharacterConfig) bool {
 		player.RemainingCharacters[i] = c
 	}
 
-	r.log("玩家 %s 选人完成: chars=%v ", playerId, characterIds)
+	charNames := make([]string, len(characterIds))
+	for i, c := range characterIds {
+		stats := GetCharacterStats(c)
+		charNames[i] = stats.Name
+	}
+
+	r.log("玩家 %s 选人完成: %v", playerId, charNames)
 	return true
 }
 
@@ -121,17 +137,62 @@ func (r *Room) waitPickDone() {
 }
 
 // autoPick 超时自动选择
-func (r *Room) autoPick() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+func (r *Room) autoPick(availableChars []string) {
+	if len(availableChars) == 0 {
+		r.log("无可选角色，使用默认角色池")
+		availableChars = CharacterPool
+	}
+
+	needChars := r.cfg.Characters
+	if needChars <= 0 {
+		needChars = 3
+	}
+
+	// 确保可用角色足够
+	if len(availableChars) < needChars {
+		// 不足则补充默认角色
+		for _, c := range CharacterPool {
+			if len(availableChars) >= needChars {
+				break
+			}
+			has := false
+			for _, a := range availableChars {
+				if a == c {
+					has = true
+					break
+				}
+			}
+			if !has {
+				availableChars = append(availableChars, c)
+			}
+		}
+	}
 
 	for _, p := range r.Players {
 		if p.PickedConfirmed {
 			continue
 		}
 
-		// TODO 随机选择角色
+		// 随机打乱并从可用角色中选取
+		shuffled := make([]string, len(availableChars))
+		copy(shuffled, availableChars)
+		rand.Shuffle(len(shuffled), func(i, j int) {
+			shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+		})
 
-		r.log("玩家 %s 自动选人: chars=%v", p.PlayerId)
+		selected := shuffled[:needChars]
+
+		p.PickedCharacters = &game.CharacterConfig{
+			CharacterIds: selected,
+		}
+		p.PickedConfirmed = true
+		p.RemainingCharacters = make([]string, needChars)
+		copy(p.RemainingCharacters, selected)
+
+		charNames := make([]string, len(selected))
+		for i, c := range selected {
+			charNames[i] = GetCharacterStats(c).Name
+		}
+		r.log("玩家 %s 自动选人: %v", p.PlayerId, charNames)
 	}
 }

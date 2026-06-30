@@ -40,4 +40,7 @@ service PlayerService {
   //获取段位信息
   rpc GetMatchStats(player.rank.GetMatchStatsRequest) returns (player.rank.GetMatchStatsResponse);
 
+  //搜索玩家（昵称/ID 模糊匹配）
+  rpc SearchPlayer(SearchPlayerRequest) returns (SearchPlayerResponse);
+
 }

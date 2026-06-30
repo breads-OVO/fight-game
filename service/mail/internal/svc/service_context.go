@@ -6,18 +6,22 @@ import (
 	"fight-game/service/mail/internal/config"
 	"fight-game/service/mail/internal/model"
 
+	"fight-game/pb/player"
+
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/zrpc"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
 type ServiceContext struct {
-	Config      config.Config
-	DB          *gorm.DB
-	RedisClient *redis.Redis
-	MongoDB     *mongo.Database
+	Config       config.Config
+	DB           *gorm.DB
+	RedisClient  *redis.Redis
+	MongoDB      *mongo.Database
+	PlayerClient player.PlayerServiceClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -37,12 +41,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		logx.Must(err)
 	}
 
-	logx.Info("Mail service MySQL, Redis and MongoDB initialized successfully")
+	// 初始化 Player 客户端
+	playerRpc := zrpc.MustNewClient(c.PlayerRpc)
+	playerClient := player.NewPlayerServiceClient(playerRpc.Conn())
+
+	logx.Info("Mail service MySQL, Redis, MongoDB and Player client initialized successfully")
 	return &ServiceContext{
-		Config:      c,
-		DB:          db,
-		RedisClient: rds,
-		MongoDB:     mongoDB,
+		Config:       c,
+		DB:           db,
+		RedisClient:  rds,
+		MongoDB:      mongoDB,
+		PlayerClient: playerClient,
 	}
 }
 

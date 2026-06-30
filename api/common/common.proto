@@ -97,6 +97,31 @@ enum WSMsgType {
   MSG_MAIL_DELETE = 5011;                           // 删除邮件
   MSG_MAIL_DELETE_RESPONSE = 5012;                  // 删除邮件响应
 
+  // Friend 相关 (6000~6999)
+  MSG_FRIEND_ADD = 6001;                            // 添加好友
+  MSG_FRIEND_ADD_RESPONSE = 6002;                   // 添加好友响应
+  MSG_FRIEND_REPLY = 6003;                          // 回复好友请求
+  MSG_FRIEND_REPLY_RESPONSE = 6004;                 // 回复好友请求响应
+  MSG_FRIEND_REMOVE = 6005;                         // 删除好友
+  MSG_FRIEND_REMOVE_RESPONSE = 6006;                // 删除好友响应
+  MSG_FRIEND_GET_LIST = 6007;                       // 获取好友列表
+  MSG_FRIEND_GET_LIST_RESPONSE = 6008;              // 获取好友列表响应
+  MSG_FRIEND_SEARCH_PLAYER = 6009;                  // 搜索玩家
+  MSG_FRIEND_SEARCH_PLAYER_RESPONSE = 6010;         // 搜索玩家响应
+
+  // Chat 相关 (7000~7999)
+  MSG_CHAT_SEND = 7001;                             // 发送聊天消息
+  MSG_CHAT_SEND_RESPONSE = 7002;                    // 发送聊天消息响应
+  MSG_CHAT_GET_HISTORY = 7003;                      // 获取聊天历史
+  MSG_CHAT_GET_HISTORY_RESPONSE = 7004;             // 获取聊天历史响应
+
+  // Push 通知相关 (8000~8999) — server→client 主动推送
+  MSG_PUSH_NOTIFY = 8001;                           // 通用推送通知
+  MSG_PUSH_FRIEND_REQUEST = 8010;                   // 好友请求通知推送
+  MSG_PUSH_FRIEND_ACCEPTED = 8011;                  // 好友请求已接受通知推送
+  MSG_PUSH_CHAT_MESSAGE = 8020;                     // 新聊天消息推送
+  MSG_PUSH_NEW_MAIL = 8030;                         // 新邮件通知推送
+
   // System 相关 (9000~9999)
   MSG_HEARTBEAT_PING = 9001;
   MSG_HEARTBEAT_PING_REQUEST = 9002;

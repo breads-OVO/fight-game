@@ -3,8 +3,6 @@ syntax = "proto3";
 package mail;
 option go_package = "fight-game/pb/mail";
 
-import "api/common/common.proto";
-
 // 邮件状态
 enum MailStatus {
   UNREAD = 0;      // 未读
@@ -24,6 +22,7 @@ message Attachment {
   string type = 1;      // 附件类型: currency/asset
   string id = 2;        // 货币类型ID或资产ID
   int32 amount = 3;     // 数量
+  int32 assetType = 4;  // 资产类型（asset时有效）: 0=NONE, 1=CHARACTER, 2=SKIN, 3=TITLE
 }
 
 // 邮件摘要（列表用）

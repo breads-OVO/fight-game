@@ -10,9 +10,10 @@ import (
 type Config struct {
 	RpcServer zrpc.RpcServerConf
 
-	MySQL   config.MySQLConfig   // MySQL配置
-	Redis   redis.RedisConf      // Redis配置
-	MongoDB config.MongoDBConfig // MongoDB配置
+	MySQL     config.MySQLConfig   // MySQL配置
+	Redis     redis.RedisConf      // Redis配置
+	MongoDB   config.MongoDBConfig // MongoDB配置
+	PlayerRpc zrpc.RpcClientConf   // Player gRPC 客户端配置
 
 	Mail Mail // 邮件服务配置
 }

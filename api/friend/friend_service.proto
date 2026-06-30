@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package friend;
+option go_package = "fight-game/pb/friend";
+
+import "api/friend/friend.proto";
+
+// FriendService gRPC 定义
+service FriendService {
+  // 添加好友请求
+  rpc AddFriend(AddFriendRequest) returns (AddFriendResponse);
+  // 回复好友请求
+  rpc ReplyFriend(ReplyFriendRequest) returns (ReplyFriendResponse);
+  // 删除好友
+  rpc RemoveFriend(RemoveFriendRequest) returns (RemoveFriendResponse);
+  // 获取好友列表
+  rpc GetFriendList(GetFriendListRequest) returns (GetFriendListResponse);
+  // 搜索玩家
+  rpc SearchPlayer(SearchPlayerRequest) returns (SearchPlayerResponse);
+  // 发送聊天消息
+  rpc SendChatMessage(SendChatMessageRequest) returns (SendChatMessageResponse);
+  // 获取聊天历史
+  rpc GetChatHistory(GetChatHistoryRequest) returns (GetChatHistoryResponse);
+}

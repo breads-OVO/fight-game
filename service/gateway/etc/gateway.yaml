@@ -2,6 +2,15 @@ Name: gateway.service
 Host: 0.0.0.0
 Port: 9001
 
+# PushService gRPC 服务（供其他服务调用，推送 WS 消息）
+PushRpcServer:
+  Name: gateway.push
+  ListenOn: 0.0.0.0:9014
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.gateway
+
 WebSocket:
   Port: 9000
   ReadTimeout: 30
@@ -33,6 +42,12 @@ MailRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: fight.mail
+
+FriendRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: fight.friend
 
 Etcd:
   Hosts:

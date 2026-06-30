@@ -50,6 +50,15 @@ func (c *Connection) WriteProtobuf(msgType common.WSMsgType, payload proto.Messa
 	return c.WriteMessage(websocket.BinaryMessage, data)
 }
 
+// WriteProtobufData 写入原始字节数据作为 WSMessage body（用于 PushService 推送）
+func (c *Connection) WriteProtobufData(msgType int32, body []byte) error {
+	data, err := utils.PackWSMessage(msgType, body, c.PlayerId, "", 0)
+	if err != nil {
+		return err
+	}
+	return c.WriteMessage(websocket.BinaryMessage, data)
+}
+
 // Close 关闭连接
 func (c *Connection) Close() {
 	c.mu.Lock()

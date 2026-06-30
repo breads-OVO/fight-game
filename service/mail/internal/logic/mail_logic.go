@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 	"fight-game/pb/mail"
+	"fight-game/pb/player/asset"
+	"fight-game/pb/player/currency"
 	"fight-game/pkg/common/utils"
 	"fight-game/service/mail/internal/model"
 	"fight-game/service/mail/internal/svc"
@@ -38,9 +40,10 @@ func (l *MailLogic) SendMail(in *mail.SendMailRequest) (*mail.SendMailResponse, 
 	attachments := make([]model.Attachment, 0, len(in.Attachments))
 	for _, a := range in.Attachments {
 		attachments = append(attachments, model.Attachment{
-			Type:   a.Type,
-			ID:     a.Id,
-			Amount: a.Amount,
+			Type:      a.Type,
+			ID:        a.Id,
+			Amount:    a.Amount,
+			AssetType: a.AssetType,
 		})
 	}
 
@@ -265,9 +268,10 @@ func (l *MailLogic) GetMailDetail(in *mail.GetMailDetailRequest) (*mail.GetMailD
 	attachments := make([]*mail.Attachment, 0, len(body.Attachments))
 	for _, a := range body.Attachments {
 		attachments = append(attachments, &mail.Attachment{
-			Type:   a.Type,
-			Id:     a.ID,
-			Amount: a.Amount,
+			Type:      a.Type,
+			Id:        a.ID,
+			Amount:    a.Amount,
+			AssetType: a.AssetType,
 		})
 	}
 
@@ -359,11 +363,41 @@ func (l *MailLogic) ClaimAttachment(in *mail.ClaimAttachmentRequest) (*mail.Clai
 		return &mail.ClaimAttachmentResponse{Success: false}, nil
 	}
 
-	// TODO: 调用 Player 服务发放附件
-	// 这里需要集成 player 服务的 gRPC 客户端来发放货币/资产
-	// 后续通过事件驱动或 gRPC 调用实现
-	logx.Infof("Claiming attachments for player=%s, mailId=%s, attachments=%v",
-		in.PlayerId, in.MailId, body.Attachments)
+	// 调用 Player 服务发放附件
+	for _, att := range body.Attachments {
+		switch att.Type {
+		case "currency":
+			// 货币类型附件：调用 ChangeCurrency 增加货币
+			currencyType := parseCurrencyType(att.ID)
+			_, err := l.svcCtx.PlayerClient.ChangeCurrency(l.ctx, &currency.ChangeCurrencyRequest{
+				PlayerId:     in.PlayerId,
+				CurrencyType: currencyType,
+				ChangeType:   true, // 增加
+				Count:        int64(att.Amount),
+				Reason:       "mail_attachment:" + in.MailId,
+			})
+			if err != nil {
+				logx.Errorf("ClaimAttachment change currency failed: player=%s, mailId=%s, err=%v",
+					in.PlayerId, in.MailId, err)
+				return &mail.ClaimAttachmentResponse{Success: false}, err
+			}
+		case "asset":
+			// 资产类型附件：调用 AddAsset 添加资产
+			_, err := l.svcCtx.PlayerClient.AddAsset(l.ctx, &asset.AddAssetRequest{
+				PlayerId:  in.PlayerId,
+				AssetId:   att.ID,
+				AssetType: asset.AssetType(att.AssetType),
+				Quantity:  att.Amount,
+			})
+			if err != nil {
+				logx.Errorf("ClaimAttachment add asset failed: player=%s, mailId=%s, err=%v",
+					in.PlayerId, in.MailId, err)
+				return &mail.ClaimAttachmentResponse{Success: false}, err
+			}
+		default:
+			logx.Errorf("ClaimAttachment unknown attachment type: %s", att.Type)
+		}
+	}
 
 	// 标记已领取
 	now := time.Now()
@@ -386,7 +420,21 @@ func (l *MailLogic) ClaimAttachment(in *mail.ClaimAttachmentRequest) (*mail.Clai
 		return &mail.ClaimAttachmentResponse{Success: false}, err
 	}
 
+	logx.Infof("ClaimAttachment success: player=%s, mailId=%s, attachments=%v",
+		in.PlayerId, in.MailId, body.Attachments)
 	return &mail.ClaimAttachmentResponse{
 		Success: result.ModifiedCount > 0,
 	}, nil
+}
+
+// parseCurrencyType 将字符串货币ID转换为 proto CurrencyType
+func parseCurrencyType(id string) currency.CurrencyType {
+	switch id {
+	case "gold":
+		return currency.CurrencyType_GOLD
+	case "point", "diamond":
+		return currency.CurrencyType_Point
+	default:
+		return currency.CurrencyType_None
+	}
 }

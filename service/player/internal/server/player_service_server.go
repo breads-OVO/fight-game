@@ -94,3 +94,8 @@ func (s *PlayerServiceServer) GetMatchStats(ctx context.Context, in *rank.GetMat
 	l := logic.NewPlayerRankLogic(ctx, s.svcCtx)
 	return l.GetMatchStats(in)
 }
+
+func (s *PlayerServiceServer) SearchPlayer(ctx context.Context, in *player.SearchPlayerRequest) (*player.SearchPlayerResponse, error) {
+	l := logic.NewPlayerLogic(ctx, s.svcCtx)
+	return l.SearchPlayer(in)
+}

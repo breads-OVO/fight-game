@@ -48,12 +48,16 @@ type Room struct {
 	banConfirmed map[string]bool // playerId → 已确认
 
 	// Fight 阶段状态
-	RoundNo      int32        // 当前回合（从1开始）
-	FrameNo      int32        // 当前帧号
-	RoundWinner  string       // 当前回合胜者
-	RoundTimeout bool         // 当前回合是否超时
-	RoundEnded   bool         // 当前回合是否结束
-	fightTick    *time.Ticker // 战斗计时器
+	RoundNo      int32         // 当前回合（从1开始）
+	FrameNo      int32         // 当前帧号
+	RoundWinner  string        // 当前回合胜者
+	RoundTimeout bool          // 当前回合是否超时
+	RoundEnded   bool          // 当前回合是否结束
+	fightTick    *time.Ticker  // 战斗计时器
+	nextRoundCh  chan struct{} // 下一回合信号（fightLoop用）
+
+	// 飞行道具
+	Projectiles []*Projectile // 当前回合的飞行道具
 
 	// 结果
 	RoundResults []*game.RoundResult // 回合结果
@@ -90,6 +94,7 @@ func NewRoom(roomId string, gameType pbQueue.GameType, playerIds []string, ratin
 		stage:        game.GameStage_STAGE_UNKNOWN,
 		stageCh:      make(chan StageState, 8),
 		closeCh:      make(chan struct{}),
+		nextRoundCh:  make(chan struct{}, 1),
 		pickReady:    make(map[string]bool),
 		conns:        make(map[string]*GameConn),
 		RoundResults: make([]*game.RoundResult, 0),

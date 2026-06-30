@@ -60,4 +60,15 @@ message UpdateSignatureResponse {
   PlayerProfile profile = 1;
 }
 
+//搜索玩家
+message SearchPlayerRequest {
+  string keyword = 1;           // 搜索关键词（昵称或ID）
+  int32 page = 2;               // 页码
+  int32 pageSize = 3;           // 每页数量
+}
+message SearchPlayerResponse {
+  repeated PlayerProfile players = 1;
+  int32 total = 2;
+}
+
 
