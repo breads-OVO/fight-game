@@ -13,7 +13,6 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -80,28 +79,16 @@ func (l *MailLogic) SendMail(in *mail.SendMailRequest) (*mail.SendMailResponse, 
 		ExpireAt:  expireAt,
 	}
 
-	// MongoDB 事务写入
-	session, err := l.svcCtx.MongoDB.Client().StartSession()
-	if err != nil {
-		logx.Errorf("StartSession error: %v", err)
+	// 写入 mailBody 和 mailBox（顺序写入，不依赖事务）
+	mailBodyColl := l.svcCtx.MongoDB.Collection(model.CollectionMailBody)
+	mailBoxColl := l.svcCtx.MongoDB.Collection(model.CollectionMailBox)
+
+	if _, err := mailBodyColl.InsertOne(l.ctx, mailBody); err != nil {
+		logx.Errorf("Insert mailBody error: %v", err)
 		return nil, err
 	}
-	defer session.EndSession(l.ctx)
-
-	_, err = session.WithTransaction(l.ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		mailBodyColl := l.svcCtx.MongoDB.Collection(model.CollectionMailBody)
-		mailBoxColl := l.svcCtx.MongoDB.Collection(model.CollectionMailBox)
-
-		if _, err := mailBodyColl.InsertOne(sessCtx, mailBody); err != nil {
-			return nil, err
-		}
-		if _, err := mailBoxColl.InsertOne(sessCtx, mailBox); err != nil {
-			return nil, err
-		}
-		return nil, nil
-	})
-	if err != nil {
-		logx.Errorf("SendMail transaction failed: %v", err)
+	if _, err := mailBoxColl.InsertOne(l.ctx, mailBox); err != nil {
+		logx.Errorf("Insert mailBox error: %v", err)
 		return nil, err
 	}
 
